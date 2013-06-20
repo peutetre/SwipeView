@@ -322,6 +322,9 @@ var SwipeView = (function (window, document) {
 				}
 				if (!point) return;
 			}
+			else {
+				point = e;
+			}
 
 			var deltaX = point.pageX - this.pointX,
 				deltaY = point.pageY - this.pointY,
