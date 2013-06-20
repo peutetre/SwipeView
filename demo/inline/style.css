@@ -66,7 +66,7 @@ h1 {
 	background:rgba(255,255,255,0.4);
 }
 
-#swipeview-slider > div {
+.swipeview-slider > div {
 	position:relative;
 	display:-webkit-box;
 	-webkit-box-orient:vertical;
@@ -75,7 +75,7 @@ h1 {
 	overflow:hidden;
 }
 
-#swipeview-slider span {
+.swipeview-slider span {
 	-webkit-box-sizing:border-box;
 	display:block;
 	text-align:center;
