@@ -7,6 +7,8 @@ Read more at [cubiq.org](http://cubiq.org/swipeview)
 
 Gallery Demo: [http://cubiq.org/dropbox/SwipeView/demo/gallery](http://cubiq.org/dropbox/SwipeView/demo/gallery)
 
+Multiple SwipeViews in the same document: [http://peutetre.github.io/SwipeView/demo/gallery2/](http://peutetre.github.io/SwipeView/demo/gallery2/)
+
 eReader Demo: [http://cubiq.org/dropbox/SwipeView/demo/ereader](http://cubiq.org/dropbox/SwipeView/demo/ereader)
 
 Inline Demo: [http://cubiq.org/dropbox/SwipeView/demo/inline](http://cubiq.org/dropbox/SwipeView/demo/inline)
