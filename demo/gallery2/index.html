@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>SwipeView</title>
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="../../src/swipeview.js"></script>
+</head>
+
+<body>
+    <div id="wrapper1" class='wrapper'></div>
+    <div id="wrapper2" class="wrapper"></div>
+    <div id="wrapper3" class="wrapper"></div>
+    <div id="wrapper4" class="wrapper"></div>
+    <div id="wrapper5" class="wrapper"></div>
+
+<script type="text/javascript">
+
+function getImgURL() {
+    return "http://lorempixel.com/186/125/?t=" + Math.ceil(Math.random()*100000);
+}
+
+function genData(size) {
+    var data = [], tmp = [], i=0, j=3;
+
+    for(var k=0; k<size; k++) {
+        tmp.push(getImgURL());
+        if (i<j) { i++; }
+        else {
+            tmp.push(getImgURL());
+            data.push({ imgs:tmp, height:125, width:186 });
+            i = 0; tmp = [];
+        }
+    }
+    return data;
+}
+
+function generateSwipeView(id, data) {
+    var gallery = new SwipeView(id, {
+            hastyPageFlip:true,
+            numberOfPages: data.length
+        }), i, page;
+
+    function genImgs(container, page, data) {
+        var img, div;
+        for(var i=0; i< 5; i++) {
+            div = document.createElement('div');
+            div.className = 'container';
+            img = document.createElement('img');
+            img.className = 'loading';
+            img.src = data[page].imgs[i];
+            img.width = data[page].width;
+            img.height = data[page].height;
+            div.style.width = data[page].width + "px";
+            div.style.height = data[page].height + "px";
+            img.onload = function () { this.className = ''; }
+            div.appendChild(img);
+            container.appendChild(div);
+        }
+    }
+
+    for(i=0; i<3; i++) {
+        page = i==0 ? data.length-1 : i-1;
+        div = document.createElement('div');
+        div.className = 'set-container';
+        genImgs(div, page, data);
+        gallery.masterPages[i].appendChild(div);
+    }
+
+    function setImg(el, src) {
+        el.className = 'loading';
+        el.src = src;
+        el.onload = function () { this.className = ''; }
+    }
+
+    gallery.onMoveOut(function () {
+        console.log("onMoveOut");
+    });
+
+    gallery.onFlip(function () {
+        var el,
+            upcoming,
+            i;
+
+        for (i=0; i<3; i++) {
+            upcoming = gallery.masterPages[i].dataset.upcomingPageIndex;
+
+            if (upcoming != gallery.masterPages[i].dataset.pageIndex) {
+                els = gallery.masterPages[i].querySelectorAll('img');
+                setImg(els[0], data[upcoming].imgs[0]);
+                setImg(els[1], data[upcoming].imgs[1]);
+                setImg(els[2], data[upcoming].imgs[2]);
+                setImg(els[3], data[upcoming].imgs[3]);
+                setImg(els[4], data[upcoming].imgs[4]);
+            }
+        }
+    });
+    return gallery;
+}
+
+generateSwipeView("#wrapper1", genData(100));
+generateSwipeView("#wrapper2", genData(100));
+generateSwipeView("#wrapper3", genData(100));
+generateSwipeView("#wrapper4", genData(100));
+generateSwipeView("#wrapper5", genData(100));
+
+</script>
+</body>
+</html>
