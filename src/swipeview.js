@@ -286,9 +286,10 @@ var SwipeView = (function (window, document) {
 
 			if (this.initiated) return;
 			
-			var point = hasTouch ? e.touches[0] : e;
+			var point = hasTouch ? e.targetTouches[0] : e;
 			
 			this.initiated = true;
+			this.identifier = point.identifier;
 			this.moved = false;
 			this.thresholdExceeded = false;
 			this.startX = point.pageX;
@@ -310,9 +311,19 @@ var SwipeView = (function (window, document) {
 		
 		__move: function (e) {
 			if (!this.initiated) return;
+			var i, l, point;
+			
+			if (hasTouch) {
+				i = 0;
+				l = e.changedTouches.length;
+				for(;i<l;i++) {
+					if (e.changedTouches.item(i).identifier === this.identifier)
+						point = e.changedTouches.item(i);
+				}
+				if (!point) return;
+			}
 
-			var point = hasTouch ? e.touches[0] : e,
-				deltaX = point.pageX - this.pointX,
+			var deltaX = point.pageX - this.pointX,
 				deltaY = point.pageY - this.pointY,
 				newX = this.x + deltaX,
 				dist = Math.abs(point.pageX - this.startX);
@@ -361,9 +372,27 @@ var SwipeView = (function (window, document) {
 		
 		__end: function (e) {
 			if (!this.initiated) return;
-			
-			var point = hasTouch ? e.changedTouches[0] : e,
-				dist = Math.abs(point.pageX - this.startX);
+
+			var point;
+
+			if(hasTouch) {
+				var i=0, l=e.touches.length;
+				for(;i<l;i++) {
+					if (e.touches.item(i).identifier === this.identifier)
+						return;
+				}
+				i = 0, l = e.changedTouches.length;
+				for(;i<l;i++) {
+					if(e.changedTouches.item(i).identifier === this.identifier)
+						point = e.changedTouches.item(i);
+				}
+			}
+			else {
+				point = e;
+			}
+
+			var dist = Math.abs(point.pageX - this.startX);
+
 
 			this.initiated = false;
 			
