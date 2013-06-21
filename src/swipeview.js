@@ -389,6 +389,7 @@ var SwipeView = (function (window, document) {
 					if(e.changedTouches.item(i).identifier === this.identifier)
 						point = e.changedTouches.item(i);
 				}
+				if (!point) return;
 			}
 			else {
 				point = e;
