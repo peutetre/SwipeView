@@ -110,9 +110,9 @@ var SwipeView = (function (window, document) {
 			// in Opera >= 12 the transitionend event is lowercase so we register both events
 			if ( vendor == 'O' ) this.slider.addEventListener(transitionEndEvent.toLowerCase(), this, false);
 
-/*			if (!hasTouch) {
+			if (!hasTouch) {
 				this.wrapper.addEventListener('mouseout', this, false);
-			}*/
+			}
 		};
 
 	SwipeView.prototype = {
@@ -155,9 +155,9 @@ var SwipeView = (function (window, document) {
 			this.wrapper.removeEventListener(endEvent, this, false);
 			this.slider.removeEventListener(transitionEndEvent, this, false);
 
-/*			if (!hasTouch) {
+			if (!hasTouch) {
 				this.wrapper.removeEventListener('mouseout', this, false);
-			}*/
+			}
 		},
 
 		refreshSize: function () {
@@ -250,6 +250,7 @@ var SwipeView = (function (window, document) {
 					this.__move(e);
 					break;
 				case cancelEvent:
+				case "mouseout":
 				case endEvent:
 					this.__end(e);
 					break;
