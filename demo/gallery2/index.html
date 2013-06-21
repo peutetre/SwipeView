@@ -76,10 +76,6 @@ function generateSwipeView(id, data) {
         el.onload = function () { this.className = ''; }
     }
 
-    gallery.onMoveOut(function () {
-        console.log("onMoveOut");
-    });
-
     gallery.onFlip(function () {
         var el,
             upcoming,
