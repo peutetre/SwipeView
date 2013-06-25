@@ -53,7 +53,7 @@ var	gallery,
 		}
 	];
 
-gallery = new VerticalSwipeView('#wrapper', { numberOfPages: slides.length });
+gallery = new VerticalSwipeView('#wrapper', { numberOfPages: slides.length, hastyPageFlip:true });
 
 // Load initial data
 for (i=0; i<3; i++) {
@@ -84,15 +84,6 @@ gallery.onFlip(function () {
 		}
 	}
 	
-});
-
-gallery.onMoveOut(function () {
-	gallery.masterPages[gallery.currentMasterPage].className = gallery.masterPages[gallery.currentMasterPage].className.replace(/(^|\s)swipeview-active(\s|$)/, '');
-});
-
-gallery.onMoveIn(function () {
-	var className = gallery.masterPages[gallery.currentMasterPage].className;
-	/(^|\s)swipeview-active(\s|$)/.test(className) || (gallery.masterPages[gallery.currentMasterPage].className = !className ? 'swipeview-active' : className + ' swipeview-active');
 });
 
 </script>
