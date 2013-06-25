@@ -54,7 +54,9 @@ var VerticalSwipeView = (function (window, document) {
 
 			return transitionEnd[vendor];
 		})(),
-		
+
+        uuid = 0,
+
 		VerticalSwipeView = function (el, options) {
 			var i,
 				div,
@@ -62,6 +64,7 @@ var VerticalSwipeView = (function (window, document) {
 				pageIndex;
 
 			this.wrapper = typeof el == 'string' ? document.querySelector(el) : el;
+            this.id = this.wrapper.id || ++uuid;
 			this.options = {
 				text: null,
 				numberOfPages: 3,
@@ -79,7 +82,7 @@ var VerticalSwipeView = (function (window, document) {
 			this.masterPages = [];
 			
 			div = document.createElement('div');
-			div.className = 'swipeview-slider';
+			div.className = 'vertical-swipeview-slider';
 			div.style.cssText = 'position:relative;top:0;height:100%;width:100%;' + cssVendor + 'transition-duration:0;' + cssVendor + 'transform:translateZ(0);' + cssVendor + 'transition-timing-function:ease-out';
 			this.wrapper.appendChild(div);
 			this.slider = div;
@@ -88,7 +91,7 @@ var VerticalSwipeView = (function (window, document) {
 
 			for (i=-1; i<2; i++) {
 				div = document.createElement('div');
-				div.style.cssText = cssVendor + 'transform:translateZ(0);position:absolute;top:0;height:100%;width:100%;left:' + i*100 + '%';
+				div.style.cssText = cssVendor + 'transform:translateZ(0);position:absolute;top:0;height:100%;width:100%;top:' + i*100 + '%';
 				if (!div.dataset) div.dataset = {};
 				pageIndex = i == -1 ? this.options.numberOfPages - 1 : i;
 				div.dataset.pageIndex = pageIndex;
@@ -101,7 +104,7 @@ var VerticalSwipeView = (function (window, document) {
 			}
 			
 			className = this.masterPages[1].className;
-			this.masterPages[1].className = !className ? 'swipeview-active' : className + ' swipeview-active';
+			this.masterPages[1].className = !className ? 'vertical-swipeview-active' : className + ' vertical-swipeview-active';
 
 			window.addEventListener(resizeEvent, this, false);
 			this.wrapper.addEventListener(startEvent, this, false);
@@ -118,34 +121,34 @@ var VerticalSwipeView = (function (window, document) {
 
 	VerticalSwipeView.prototype = {
 		currentMasterPage: 1,
-		x: 0,
+		y: 0,
 		page: 0,
 		pageIndex: 0,
 		customEvents: [],
 		
 		onFlip: function (fn) {
-			this.wrapper.addEventListener('swipeview-flip', fn, false);
+			this.wrapper.addEventListener(this.id + 'vertical-swipeview-flip', fn, false);
 			this.customEvents.push(['flip', fn]);
 		},
 		
 		onMoveOut: function (fn) {
-			this.wrapper.addEventListener('swipeview-moveout', fn, false);
+			this.wrapper.addEventListener(this.id + 'vertical-swipeview-moveout', fn, false);
 			this.customEvents.push(['moveout', fn]);
 		},
 
 		onMoveIn: function (fn) {
-			this.wrapper.addEventListener('swipeview-movein', fn, false);
+			this.wrapper.addEventListener(this.id + 'vertical-swipeview-movein', fn, false);
 			this.customEvents.push(['movein', fn]);
 		},
 		
 		onTouchStart: function (fn) {
-			this.wrapper.addEventListener('swipeview-touchstart', fn, false);
+			this.wrapper.addEventListener(this.id + 'vertical-swipeview-touchstart', fn, false);
 			this.customEvents.push(['touchstart', fn]);
 		},
 
 		destroy: function () {
 			while ( this.customEvents.length ) {
-				this.wrapper.removeEventListener('swipeview-' + this.customEvents[0][0], this.customEvents[0][1], false);
+				this.wrapper.removeEventListener(this.id + 'vertical-swipeview-' + this.customEvents[0][0], this.customEvents[0][1], false);
 				this.customEvents.shift();
 			}
 			
@@ -164,59 +167,59 @@ var VerticalSwipeView = (function (window, document) {
 		refreshSize: function () {
 			this.wrapperWidth = this.wrapper.clientWidth;
 			this.wrapperHeight = this.wrapper.clientHeight;
-			this.pageWidth = this.wrapperWidth;
-			this.maxX = -this.options.numberOfPages * this.pageWidth + this.wrapperWidth;
+			this.pageHeight = this.wrapperHeight;
+			this.maxY = -this.options.numberOfPages * this.pageHeight + this.wrapperHeight;
 			this.snapThreshold = this.options.snapThreshold === null ?
-				Math.round(this.pageWidth * 0.15) :
+				Math.round(this.pageHeight * 0.15) :
 				/%/.test(this.options.snapThreshold) ?
-					Math.round(this.pageWidth * this.options.snapThreshold.replace('%', '') / 100) :
+					Math.round(this.pageHeight * this.options.snapThreshold.replace('%', '') / 100) :
 					this.options.snapThreshold;
 		},
 		
 		updatePageCount: function (n) {
 			this.options.numberOfPages = n;
-			this.maxX = -this.options.numberOfPages * this.pageWidth + this.wrapperWidth;
+			this.maxY = -this.options.numberOfPages * this.pageHeight + this.wrapperHeight;
 		},
 		
 		goToPage: function (p) {
 			var i;
 
-			this.masterPages[this.currentMasterPage].className = this.masterPages[this.currentMasterPage].className.replace(/(^|\s)swipeview-active(\s|$)/, '');
+			this.masterPages[this.currentMasterPage].className = this.masterPages[this.currentMasterPage].className.replace(/(^|\s)vertical-swipeview-active(\s|$)/, '');
 			for (i=0; i<3; i++) {
 				className = this.masterPages[i].className;
-				/(^|\s)swipeview-loading(\s|$)/.test(className) || (this.masterPages[i].className = !className ? 'swipeview-loading' : className + ' swipeview-loading');
+				/(^|\s)vertical-swipeview-loading(\s|$)/.test(className) || (this.masterPages[i].className = !className ? 'vertical-swipeview-loading' : className + ' swipeview-loading');
 			}
 			
 			p = p < 0 ? 0 : p > this.options.numberOfPages-1 ? this.options.numberOfPages-1 : p;
 			this.page = p;
 			this.pageIndex = p;
 			this.slider.style[transitionDuration] = '0s';
-			this.__pos(-p * this.pageWidth);
+			this.__pos(-p * this.pageHeight);
 
 			this.currentMasterPage = (this.page + 1) - Math.floor((this.page + 1) / 3) * 3;
 
-			this.masterPages[this.currentMasterPage].className = this.masterPages[this.currentMasterPage].className + ' swipeview-active';
+			this.masterPages[this.currentMasterPage].className = this.masterPages[this.currentMasterPage].className + ' vertical-swipeview-active';
 
 			if (this.currentMasterPage === 0) {
-				this.masterPages[2].style.left = this.page * 100 - 100 + '%';
-				this.masterPages[0].style.left = this.page * 100 + '%';
-				this.masterPages[1].style.left = this.page * 100 + 100 + '%';
+				this.masterPages[2].style.top = this.page * 100 - 100 + '%';
+				this.masterPages[0].style.top = this.page * 100 + '%';
+				this.masterPages[1].style.top = this.page * 100 + 100 + '%';
 				
 				this.masterPages[2].dataset.upcomingPageIndex = this.page === 0 ? this.options.numberOfPages-1 : this.page - 1;
 				this.masterPages[0].dataset.upcomingPageIndex = this.page;
 				this.masterPages[1].dataset.upcomingPageIndex = this.page == this.options.numberOfPages-1 ? 0 : this.page + 1;
 			} else if (this.currentMasterPage == 1) {
-				this.masterPages[0].style.left = this.page * 100 - 100 + '%';
-				this.masterPages[1].style.left = this.page * 100 + '%';
-				this.masterPages[2].style.left = this.page * 100 + 100 + '%';
+				this.masterPages[0].style.top = this.page * 100 - 100 + '%';
+				this.masterPages[1].style.top = this.page * 100 + '%';
+				this.masterPages[2].style.top = this.page * 100 + 100 + '%';
 
 				this.masterPages[0].dataset.upcomingPageIndex = this.page === 0 ? this.options.numberOfPages-1 : this.page - 1;
 				this.masterPages[1].dataset.upcomingPageIndex = this.page;
 				this.masterPages[2].dataset.upcomingPageIndex = this.page == this.options.numberOfPages-1 ? 0 : this.page + 1;
 			} else {
-				this.masterPages[1].style.left = this.page * 100 - 100 + '%';
-				this.masterPages[2].style.left = this.page * 100 + '%';
-				this.masterPages[0].style.left = this.page * 100 + 100 + '%';
+				this.masterPages[1].style.top = this.page * 100 - 100 + '%';
+				this.masterPages[2].style.top = this.page * 100 + '%';
+				this.masterPages[0].style.top = this.page * 100 + 100 + '%';
 
 				this.masterPages[1].dataset.upcomingPageIndex = this.page === 0 ? this.options.numberOfPages-1 : this.page - 1;
 				this.masterPages[2].dataset.upcomingPageIndex = this.page;
@@ -227,18 +230,18 @@ var VerticalSwipeView = (function (window, document) {
 		},
 		
 		next: function () {
-			if (!this.options.loop && this.x == this.maxX) return;
+			if (!this.options.loop && this.y == this.maxY) return;
 			
-			this.directionX = -1;
-			this.x -= 1;
+			this.directionY = -1;
+			this.y -= 1;
 			this.__checkPosition();
 		},
 
 		prev: function () {
-			if (!this.options.loop && this.x === 0) return;
+			if (!this.options.loop && this.y === 0) return;
 
-			this.directionX = 1;
-			this.x += 1;
+			this.directionY = 1;
+			this.y += 1;
 			this.__checkPosition();
 		},
 
@@ -271,15 +274,15 @@ var VerticalSwipeView = (function (window, document) {
 		* Pseudo private methods
 		*
 		*/
-		__pos: function (x) {
-			this.x = x;
-			this.slider.style[transform] = 'translate(' + x + 'px,0)' + translateZ;
+		__pos: function (y) {
+			this.y = y;
+			this.slider.style[transform] = 'translate(0, ' + y + 'px)' + translateZ;
 		},
 
 		__resize: function () {
 			this.refreshSize();
 			this.slider.style[transitionDuration] = '0s';
-			this.__pos(-this.page * this.pageWidth);
+			this.__pos(-this.page * this.pageHeight);
 		},
 
 		__start: function (e) {
@@ -299,7 +302,7 @@ var VerticalSwipeView = (function (window, document) {
 			this.pointY = point.pageY;
 			this.stepsX = 0;
 			this.stepsY = 0;
-			this.directionX = 0;
+			this.directionY = 0;
 			this.directionLocked = false;
 			
 /*			var matrix = getComputedStyle(this.slider, null).webkitTransform.replace(/[^0-9-.,]/g, '').split(',');
@@ -329,13 +332,13 @@ var VerticalSwipeView = (function (window, document) {
 
 			var deltaX = point.pageX - this.pointX,
 				deltaY = point.pageY - this.pointY,
-				newX = this.x + deltaX,
-				dist = Math.abs(point.pageX - this.startX);
+				newY = this.y + deltaY,
+				dist = Math.abs(point.pageY - this.startY);
 
 			this.moved = true;
 			this.pointX = point.pageX;
 			this.pointY = point.pageY;
-			this.directionX = deltaX > 0 ? 1 : deltaX < 0 ? -1 : 0;
+			this.directionY = deltaY > 0 ? 1 : deltaY < 0 ? -1 : 0;
 			this.stepsX += Math.abs(deltaX);
 			this.stepsY += Math.abs(deltaY);
 
@@ -345,8 +348,8 @@ var VerticalSwipeView = (function (window, document) {
 				return;
 			}
 
-			// We are scrolling vertically, so skip VerticalSwipeView and give the control back to the browser
-			if (!this.directionLocked && this.stepsY > this.stepsX) {
+			// We are scrolling horizontaly, so skip VerticalSwipeView and give the control back to the browser
+			if (!this.directionLocked && this.stepsX > this.stepsY) {
 				this.initiated = false;
 				return;
 			}
@@ -355,8 +358,8 @@ var VerticalSwipeView = (function (window, document) {
 
 			this.directionLocked = true;
 
-			if (!this.options.loop && (newX > 0 || newX < this.maxX)) {
-				newX = this.x + (deltaX / 2);
+			if (!this.options.loop && (newY > 0 || newY < this.maxY)) {
+				newY = this.y + (deltaY / 2);
 			}
 
 			if (!this.thresholdExceeded && dist >= this.snapThreshold) {
@@ -371,7 +374,7 @@ var VerticalSwipeView = (function (window, document) {
 				newX = this.x + (deltaX / 2);
 			}*/
 			
-			this.__pos(newX);
+			this.__pos(newY);
 		},
 		
 		__end: function (e) {
@@ -391,7 +394,7 @@ var VerticalSwipeView = (function (window, document) {
 						point = e.changedTouches.item(i);
 				}
 				if (!point) {
-                    this.__pos(-this.page * this.pageWidth);
+                    this.__pos(-this.page * this.pageHeight);
                     this.initiated = false;
                     return;
                 }
@@ -400,14 +403,14 @@ var VerticalSwipeView = (function (window, document) {
 				point = e;
 			}
 
-			var dist = Math.abs(point.pageX - this.startX);
+			var dist = Math.abs(point.pageY - this.startY);
 
 
 			this.initiated = false;
 			
 			if (!this.moved) return;
 
-			if (!this.options.loop && (this.x > 0 || this.x < this.maxX)) {
+			if (!this.options.loop && (this.y > 0 || this.y < this.maxY)) {
 				dist = 0;
 				this.__event('movein');
 			}
@@ -415,7 +418,7 @@ var VerticalSwipeView = (function (window, document) {
 			// Check if we exceeded the snap threshold
 			if (dist < this.snapThreshold) {
 				this.slider.style[transitionDuration] = Math.floor(300 * dist / this.snapThreshold) + 'ms';
-				this.__pos(-this.page * this.pageWidth);
+				this.__pos(-this.page * this.pageHeight);
 				return;
 			}
 
@@ -427,55 +430,55 @@ var VerticalSwipeView = (function (window, document) {
 				pageFlipIndex,
 				className;
 
-			this.masterPages[this.currentMasterPage].className = this.masterPages[this.currentMasterPage].className.replace(/(^|\s)swipeview-active(\s|$)/, '');
+			this.masterPages[this.currentMasterPage].className = this.masterPages[this.currentMasterPage].className.replace(/(^|\s)vertical-swipeview-active(\s|$)/, '');
 
 			// Flip the page
-			if (this.directionX > 0) {
-				this.page = -Math.ceil(this.x / this.pageWidth);
+			if (this.directionY > 0) {
+				this.page = -Math.ceil(this.y / this.pageHeight);
 				this.currentMasterPage = (this.page + 1) - Math.floor((this.page + 1) / 3) * 3;
 				this.pageIndex = this.pageIndex === 0 ? this.options.numberOfPages - 1 : this.pageIndex - 1;
 
 				pageFlip = this.currentMasterPage - 1;
 				pageFlip = pageFlip < 0 ? 2 : pageFlip;
-				this.masterPages[pageFlip].style.left = this.page * 100 - 100 + '%';
+				this.masterPages[pageFlip].style.top = this.page * 100 - 100 + '%';
 
 				pageFlipIndex = this.page - 1;
 			} else {
-				this.page = -Math.floor(this.x / this.pageWidth);
+				this.page = -Math.floor(this.y / this.pageHeight);
 				this.currentMasterPage = (this.page + 1) - Math.floor((this.page + 1) / 3) * 3;
 				this.pageIndex = this.pageIndex == this.options.numberOfPages - 1 ? 0 : this.pageIndex + 1;
 
 				pageFlip = this.currentMasterPage + 1;
 				pageFlip = pageFlip > 2 ? 0 : pageFlip;
-				this.masterPages[pageFlip].style.left = this.page * 100 + 100 + '%';
+				this.masterPages[pageFlip].style.top = this.page * 100 + 100 + '%';
 
 				pageFlipIndex = this.page + 1;
 			}
 
 			// Add active class to current page
 			className = this.masterPages[this.currentMasterPage].className;
-			/(^|\s)swipeview-active(\s|$)/.test(className) || (this.masterPages[this.currentMasterPage].className = !className ? 'swipeview-active' : className + ' swipeview-active');
+			/(^|\s)vertical-swipeview-active(\s|$)/.test(className) || (this.masterPages[this.currentMasterPage].className = !className ? 'vertical-swipeview-active' : className + ' vertical-swipeview-active');
 
 			// Add loading class to flipped page
 			className = this.masterPages[pageFlip].className;
-			/(^|\s)swipeview-loading(\s|$)/.test(className) || (this.masterPages[pageFlip].className = !className ? 'swipeview-loading' : className + ' swipeview-loading');
+			/(^|\s)vertical-swipeview-loading(\s|$)/.test(className) || (this.masterPages[pageFlip].className = !className ? 'vertical-swipeview-loading' : className + ' vertical-swipeview-loading');
 			
 			pageFlipIndex = pageFlipIndex - Math.floor(pageFlipIndex / this.options.numberOfPages) * this.options.numberOfPages;
 			this.masterPages[pageFlip].dataset.upcomingPageIndex = pageFlipIndex;		// Index to be loaded in the newly flipped page
 
-			newX = -this.page * this.pageWidth;
+			newY = -this.page * this.pageHeight;
 			
-			this.slider.style[transitionDuration] = Math.floor(500 * Math.abs(this.x - newX) / this.pageWidth) + 'ms';
+			this.slider.style[transitionDuration] = Math.floor(500 * Math.abs(this.y - newY) / this.pageHeight) + 'ms';
 
 			// Hide the next page if we decided to disable looping
 			if (!this.options.loop) {
-				this.masterPages[pageFlip].style.visibility = newX === 0 || newX == this.maxX ? 'hidden' : '';
+				this.masterPages[pageFlip].style.visibility = newY === 0 || newY == this.maxY ? 'hidden' : '';
 			}
 
-			if (this.x == newX) {
+			if (this.y == newY) {
 				this.__flip();		// If we swiped all the way long to the next page (extremely rare but still)
 			} else {
-				this.__pos(newX);
+				this.__pos(newY);
 				if (this.options.hastyPageFlip) this.__flip();
 			}
 		},
@@ -484,7 +487,7 @@ var VerticalSwipeView = (function (window, document) {
 			this.__event('flip');
 
 			for (var i=0; i<3; i++) {
-				this.masterPages[i].className = this.masterPages[i].className.replace(/(^|\s)swipeview-loading(\s|$)/, '');		// Remove the loading class
+				this.masterPages[i].className = this.masterPages[i].className.replace(/(^|\s)vertical-swipeview-loading(\s|$)/, '');		// Remove the loading class
 				this.masterPages[i].dataset.pageIndex = this.masterPages[i].dataset.upcomingPageIndex;
 			}
 		},
@@ -492,7 +495,7 @@ var VerticalSwipeView = (function (window, document) {
 		__event: function (type) {
 			var ev = document.createEvent("Event");
 			
-			ev.initEvent('swipeview-' + type, true, true);
+			ev.initEvent(this.id + 'vertical-swipeview-' + type, true, true);
 
 			this.wrapper.dispatchEvent(ev);
 		}

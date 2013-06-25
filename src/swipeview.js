@@ -54,6 +54,8 @@ var SwipeView = (function (window, document) {
 			return transitionEnd[vendor];
 		})(),
 		
+        uuid = 0,
+
 		SwipeView = function (el, options) {
 			var i,
 				div,
@@ -61,6 +63,7 @@ var SwipeView = (function (window, document) {
 				pageIndex;
 
 			this.wrapper = typeof el == 'string' ? document.querySelector(el) : el;
+            this.id = this.wrapper.id || ++uuid;
 			this.options = {
 				text: null,
 				numberOfPages: 3,
@@ -123,28 +126,28 @@ var SwipeView = (function (window, document) {
 		customEvents: [],
 		
 		onFlip: function (fn) {
-			this.wrapper.addEventListener('swipeview-flip', fn, false);
+			this.wrapper.addEventListener(this.id + 'swipeview-flip', fn, false);
 			this.customEvents.push(['flip', fn]);
 		},
 		
 		onMoveOut: function (fn) {
-			this.wrapper.addEventListener('swipeview-moveout', fn, false);
+			this.wrapper.addEventListener(this.id + 'swipeview-moveout', fn, false);
 			this.customEvents.push(['moveout', fn]);
 		},
 
 		onMoveIn: function (fn) {
-			this.wrapper.addEventListener('swipeview-movein', fn, false);
+			this.wrapper.addEventListener(this.id + 'swipeview-movein', fn, false);
 			this.customEvents.push(['movein', fn]);
 		},
 		
 		onTouchStart: function (fn) {
-			this.wrapper.addEventListener('swipeview-touchstart', fn, false);
+			this.wrapper.addEventListener(this.id + 'swipeview-touchstart', fn, false);
 			this.customEvents.push(['touchstart', fn]);
 		},
 
 		destroy: function () {
 			while ( this.customEvents.length ) {
-				this.wrapper.removeEventListener('swipeview-' + this.customEvents[0][0], this.customEvents[0][1], false);
+				this.wrapper.removeEventListener(this.id + 'swipeview-' + this.customEvents[0][0], this.customEvents[0][1], false);
 				this.customEvents.shift();
 			}
 			
@@ -161,8 +164,8 @@ var SwipeView = (function (window, document) {
 		},
 
 		refreshSize: function () {
-			this.wrapperWidth = this.wrapper.clientWidth;
-			this.wrapperHeight = this.wrapper.clientHeight;
+			this.wrapperWidth = this.wrapper.clientWidth === 0 ? 1024 : this.wrapper.clientWidth;
+			this.wrapperHeight = this.wrapper.clientHeight === 0 ? 145 : this.wrapper.clientHeight;
 			this.pageWidth = this.wrapperWidth;
 			this.maxX = -this.options.numberOfPages * this.pageWidth + this.wrapperWidth;
 			this.snapThreshold = this.options.snapThreshold === null ?
@@ -491,7 +494,7 @@ var SwipeView = (function (window, document) {
 		__event: function (type) {
 			var ev = document.createEvent("Event");
 			
-			ev.initEvent('swipeview-' + type, true, true);
+			ev.initEvent(this.id + '-swipeview-' + type, true, true);
 
 			this.wrapper.dispatchEvent(ev);
 		}
