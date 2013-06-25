@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>SwipeView</title>
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="../../src/swipeview.js"></script>
+    <script type="text/javascript" src="infinitegraphset.js"></script>
+</head>
+
+<body>
+    <div id="wrapper1" class='wrapper'></div>
+    <div id="wrapper2" class="wrapper"></div>
+    <div id="wrapper3" class="wrapper"></div>
+    <div id="wrapper4" class="wrapper"></div>
+    <div id="wrapper5" class="wrapper"></div>
+
+<script type="text/javascript">
+
+function getImgURL() {
+    return "http://lorempixel.com/186/125/?t=" + Math.ceil(Math.random()*100000);
+}
+
+function genData(size) {
+    var data = [], tmp = [], i=0, j=3;
+
+    for(var k=0; k<size; k++) {
+        tmp.push(getImgURL());
+        if (i<j) { i++; }
+        else {
+            tmp.push(getImgURL());
+            data.push({ imgs:tmp, height:125, width:186 });
+            i = 0; tmp = [];
+        }
+    }
+
+    return {
+        get: function (i) {
+            return data[i] || "oops";
+        },
+        length : data.length
+    };
+}
+
+var g1 = InfiniteGraphSet("#wrapper1", genData(100));
+var g2 = InfiniteGraphSet("#wrapper2", genData(100));
+var g3 = InfiniteGraphSet("#wrapper3", genData(100));
+var g4 = InfiniteGraphSet("#wrapper4", genData(100));
+var g5 = InfiniteGraphSet("#wrapper5", genData(100));
+
+</script>
+</body>
+</html>
