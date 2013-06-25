@@ -79,7 +79,7 @@ var	gallery,
 		}
 	];
 
-gallery = new VerticalSwipeView('#wrapper', { numberOfPages: slides.length });
+gallery = new VerticalSwipeView('#wrapper', { numberOfPages: slides.length, hastyPageFlip:true});
 
 // Load initial data
 for (i=0; i<3; i++) {
@@ -115,23 +115,20 @@ gallery.onFlip(function () {
 		upcoming = gallery.masterPages[i].dataset.upcomingPageIndex;
 
 		if (upcoming != gallery.masterPages[i].dataset.pageIndex) {
-            el = gallery.masterPages[i].querySelector('#wrap1-' + i);
+            els = gallery.masterPages[i].querySelectorAll('.wrapper');
+            console.log(els);
             gallery.masterPages[i].swipeview1.destroy();
-            el.innerHTML = "";
-            gallery.masterPages[i].swipeview1 = null;
-            gallery.masterPages[i].swipeview1 = InfiniteGraphSet(el, genData(100));
-
-            el = gallery.masterPages[i].querySelector('#wrap2-' + i);
             gallery.masterPages[i].swipeview2.destroy();
-            el.innerHTML = "";
-            gallery.masterPages[i].swipeview2 = null;
-            gallery.masterPages[i].swipeview2 = InfiniteGraphSet(el, genData(100));
-
-            el = gallery.masterPages[i].querySelector('#wrap3-' + i);
             gallery.masterPages[i].swipeview3.destroy();
-            el.innerHTML = "";
+            els[0].innerHTML = "";
+            els[1].innerHTML = "";
+            els[2].innerHTML = "";
+            gallery.masterPages[i].swipeview1 = null;
+            gallery.masterPages[i].swipeview2 = null;
             gallery.masterPages[i].swipeview3 = null;
-			gallery.masterPages[i].swipeview3 = InfiniteGraphSet(el, genData(100));
+            gallery.masterPages[i].swipeview1 = InfiniteGraphSet(els[0], genData(100));
+            gallery.masterPages[i].swipeview2 = InfiniteGraphSet(els[1], genData(100));
+            gallery.masterPages[i].swipeview3 = InfiniteGraphSet(els[2], genData(100));
 		}
 	}
 	
