@@ -12,16 +12,6 @@
 
 <body>
 	<div id="wrapper"></div>
-	<ul id="nav">
-		<li id="prev" onclick="gallery.prev()">-</li>
-		<li class="selected" onclick="gallery.goToPage(0)"></li>
-		<li onclick="gallery.goToPage(1)"></li>
-		<li onclick="gallery.goToPage(2)"></li>
-		<li onclick="gallery.goToPage(3)"></li>
-		<li onclick="gallery.goToPage(4)"></li>
-		<li onclick="gallery.goToPage(5)"></li>
-		<li id="next" onclick="gallery.next()">+</li>
-	</ul>
 	
 <script type="text/javascript">
 document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
@@ -30,43 +20,36 @@ var	gallery,
 	el,
 	i,
 	page,
-	dots = document.querySelectorAll('#nav li'),
 	slides = [
 		{
 			img: 'images/pic01.jpg',
 			width: 300,
-			height: 213,
-			desc: 'Piazza del Duomo, Florence, Italy'
+			height: 213
 		},
 		{
 			img: 'images/pic02.jpg',
 			width: 300,
-			height: 164,
-			desc: 'Tuscan Landscape'
+			height: 164
 		},
 		{
 			img: 'images/pic03.jpg',
 			width: 300,
-			height: 213,
-			desc: 'Colosseo, Rome, Italy'
+			height: 213
 		},
 		{
 			img: 'images/pic04.jpg',
 			width: 147,
-			height: 220,
-			desc: 'Somewhere near Chinatown, San Francisco'
+			height: 220
 		},
 		{
 			img: 'images/pic05.jpg',
 			width: 300,
-			height: 213,
-			desc: 'Medieval guard tower, Asciano, Siena, Italy'
+			height: 213
 		},
 		{
 			img: 'images/pic06.jpg',
 			width: 165,
-			height: 220,
-			desc: 'Leaning tower, Pisa, Italy'
+			height: 220
 		}
 	];
 
@@ -82,10 +65,6 @@ for (i=0; i<3; i++) {
 	el.height = slides[page].height;
 	el.onload = function () { this.className = ''; }
 	gallery.masterPages[i].appendChild(el);
-
-	el = document.createElement('span');
-	el.innerHTML = slides[page].desc;
-	gallery.masterPages[i].appendChild(el)
 }
 
 gallery.onFlip(function () {
@@ -102,14 +81,9 @@ gallery.onFlip(function () {
 			el.src = slides[upcoming].img;
 			el.width = slides[upcoming].width;
 			el.height = slides[upcoming].height;
-			
-			el = gallery.masterPages[i].querySelector('span');
-			el.innerHTML = slides[upcoming].desc;
 		}
 	}
 	
-	document.querySelector('#nav .selected').className = '';
-	dots[gallery.pageIndex+1].className = 'selected';
 });
 
 gallery.onMoveOut(function () {
