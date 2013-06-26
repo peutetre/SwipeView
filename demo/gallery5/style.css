@@ -28,8 +28,8 @@ body {
 	width:1024px;
 	min-width:320px;
 	height:145px;
-    margin:10px auto;
-	border: 5px solid rgb(43, 38, 38);
+    margin:20px auto;
+	background-color: rgb(43, 38, 38);
 }
 
 .swipeview-slider > div , .vertical-swipeview-slider > div{
