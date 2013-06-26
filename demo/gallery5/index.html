@@ -45,45 +45,13 @@ function genData(size) {
 var	gallery,
 	el,
 	i,
-	page,
-	slides = [
-		{
-			img: 'images/pic01.jpg',
-			width: 300,
-			height: 213
-		},
-		{
-			img: 'images/pic02.jpg',
-			width: 300,
-			height: 164
-		},
-		{
-			img: 'images/pic03.jpg',
-			width: 300,
-			height: 213
-		},
-		{
-			img: 'images/pic04.jpg',
-			width: 147,
-			height: 220
-		},
-		{
-			img: 'images/pic05.jpg',
-			width: 300,
-			height: 213
-		},
-		{
-			img: 'images/pic06.jpg',
-			width: 165,
-			height: 220
-		}
-	];
+	page;
 
-gallery = new VerticalSwipeView('#wrapper', { numberOfPages: slides.length, hastyPageFlip:true});
+gallery = new VerticalSwipeView('#wrapper', { numberOfPages: 100, hastyPageFlip:true});
 
 // Load initial data
 for (i=0; i<3; i++) {
-	page = i==0 ? slides.length-1 : i-1;
+	page = i==0 ? 100-1 : i-1;
 	el = document.createElement('div');
     el.className = 'wrapper';
     el.id = "wrap1-" + i;
@@ -105,6 +73,13 @@ for (i=0; i<3; i++) {
     gallery.masterPages[i].swipeview3 = InfiniteGraphSet(el, genData(100));
 	gallery.masterPages[i].appendChild(el);
 
+    el = document.createElement('div');
+    el.className = 'wrapper';
+    el.id = "wrap4-" + i;
+
+    gallery.masterPages[i].swipeview4 = InfiniteGraphSet(el, genData(100));
+    gallery.masterPages[i].appendChild(el);
+
 }
 
 gallery.onFlip(function () {
@@ -116,19 +91,22 @@ gallery.onFlip(function () {
 
 		if (upcoming != gallery.masterPages[i].dataset.pageIndex) {
             els = gallery.masterPages[i].querySelectorAll('.wrapper');
-            console.log(els);
             gallery.masterPages[i].swipeview1.destroy();
             gallery.masterPages[i].swipeview2.destroy();
             gallery.masterPages[i].swipeview3.destroy();
+            gallery.masterPages[i].swipeview4.destroy();
             els[0].innerHTML = "";
             els[1].innerHTML = "";
             els[2].innerHTML = "";
+            els[3].innerHTML = "";
             gallery.masterPages[i].swipeview1 = null;
             gallery.masterPages[i].swipeview2 = null;
             gallery.masterPages[i].swipeview3 = null;
+            gallery.masterPages[i].swipeview4 = null;
             gallery.masterPages[i].swipeview1 = InfiniteGraphSet(els[0], genData(100));
             gallery.masterPages[i].swipeview2 = InfiniteGraphSet(els[1], genData(100));
             gallery.masterPages[i].swipeview3 = InfiniteGraphSet(els[2], genData(100));
+            gallery.masterPages[i].swipeview4 = InfiniteGraphSet(els[3], genData(100));
 		}
 	}
 	
