@@ -125,7 +125,13 @@ var VerticalSwipeView = (function (window, document) {
 		page: 0,
 		pageIndex: 0,
 		customEvents: [],
-		
+
+        reset : function (pageCount) {
+            this.goToPage(0);
+            this.updatePageCount(pageCount);
+            this.refreshSize();
+        },
+
 		onFlip: function (fn) {
 			this.wrapper.addEventListener(this.id + 'vertical-swipeview-flip', fn, false);
 			this.customEvents.push(['flip', fn]);

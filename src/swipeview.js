@@ -63,7 +63,7 @@ var SwipeView = (function (window, document) {
 				pageIndex;
 
 			this.wrapper = typeof el == 'string' ? document.querySelector(el) : el;
-            this.id = this.wrapper.id || ++uuid;
+            this.id = this.wrapper.id || 'sw-id' + (++uuid);
 			this.options = {
 				text: null,
 				numberOfPages: 3,
@@ -124,7 +124,13 @@ var SwipeView = (function (window, document) {
 		page: 0,
 		pageIndex: 0,
 		customEvents: [],
-		
+	
+        reset : function (pageCount) {
+            this.goToPage(0);
+            this.updatePageCount();
+            this.refreshSize(pageCount);
+        },
+
 		onFlip: function (fn) {
 			this.wrapper.addEventListener(this.id + 'swipeview-flip', fn, false);
 			this.customEvents.push(['flip', fn]);
@@ -164,6 +170,7 @@ var SwipeView = (function (window, document) {
 		},
 
 		refreshSize: function () {
+            // FIXME, get container width/height if wrapper width/height equals 0
 			this.wrapperWidth = this.wrapper.clientWidth === 0 ? 1024 : this.wrapper.clientWidth;
 			this.wrapperHeight = this.wrapper.clientHeight === 0 ? 145 : this.wrapper.clientHeight;
 			this.pageWidth = this.wrapperWidth;

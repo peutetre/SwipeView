@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<title>SwipeView</title>
+	<link href="style.css" rel="stylesheet" type="text/css">
+	<script type="text/javascript" src="../../src/verticalswipeview.js"></script>
+	<script type="text/javascript" src="../../src/swipeview.js"></script>
+	<script type="text/javascript" src="infinitegraphset.js"></script>
+</head>
+
+<body>
+	<div id="wrapper"></div>
+	
+<script type="text/javascript">
+
+function getImgURL() {
+    return "http://lorempixel.com/186/125/?t=" + Math.ceil(Math.random()*100000);
+}
+
+function genData(size) {
+    var data = [], tmp = [], i=0, j=3;
+
+    for(var k=0; k<size; k++) {
+        tmp.push(getImgURL());
+        if (i<j) { i++; }
+        else {
+            tmp.push(getImgURL());
+            data.push({ imgs:tmp, height:125, width:186 });
+            i = 0; tmp = [];
+        }
+    }
+
+    return {
+        get: function (i) {
+            return data[i] || "oops";
+        },
+        length : data.length
+    };
+}
+
+function fake() {
+
+    var f = [
+        { imgs: ['imgs/1.png', 'imgs/2.png', 'imgs/3.png', 'imgs/4.png', 'imgs/5.png'], height:125, width:186 },
+        { imgs: ['imgs/6.png', 'imgs/7.png', 'imgs/8.png', 'imgs/9.png', 'imgs/10.png'], height:125, width:186 }
+    ];
+
+    return {
+        get : function (i) {
+            var r = [];
+            if (f[i]) {
+                r = f[i].imgs.map(function (el) { return el + "?t=" + Math.ceil(Math.random()*100000); });
+                return {
+                    imgs:r,
+                    length : r.length
+                };
+            }
+            else return { imgs:[], length:0 };
+        },
+        length : 2
+    };
+}
+
+var	gallery,
+	el,
+	i,
+	page;
+
+gallery = new VerticalSwipeView('#wrapper', { numberOfPages: 100, hastyPageFlip:true});
+
+// Load initial data
+for (i=0; i<3; i++) {
+	page = i==0 ? 100-1 : i-1;
+	el = document.createElement('div');
+    el.className = 'wrapper';
+    el.id = "wrap1-" + i;
+
+    gallery.masterPages[i].swipeview1 = InfiniteGraphSet(el, genData(100));
+	gallery.masterPages[i].appendChild(el);
+
+    el = document.createElement('div');
+    el.className = 'wrapper';
+    el.id = "wrap2-" + i;
+
+    gallery.masterPages[i].swipeview2 = InfiniteGraphSet(el, genData(100));
+    gallery.masterPages[i].appendChild(el);
+
+    el = document.createElement('div');
+    el.className = 'wrapper';
+    el.id = "wrap3-" + i;
+
+    gallery.masterPages[i].swipeview3 = InfiniteGraphSet(el, genData(100));
+	gallery.masterPages[i].appendChild(el);
+
+    el = document.createElement('div');
+    el.className = 'wrapper';
+    el.id = "wrap4-" + i;
+
+    gallery.masterPages[i].swipeview4 = InfiniteGraphSet(el, genData(100));
+    gallery.masterPages[i].appendChild(el);
+
+}
+
+// next step, reuse InifiniteGraphSets
+
+gallery.onFlip(function () {
+	var el,
+		upcoming,
+		i;
+	for (i=0; i<3; i++) {
+		upcoming = gallery.masterPages[i].dataset.upcomingPageIndex;
+        
+        if (upcoming != gallery.masterPages[i].dataset.pageIndex) {
+            if (Math.floor(Math.random() * 1000)%2) {
+                gallery.masterPages[i].swipeview1.reset(fake());
+                gallery.masterPages[i].swipeview2.reset(fake());
+                gallery.masterPages[i].swipeview3.reset(fake());
+                gallery.masterPages[i].swipeview4.reset(fake());
+            }
+            else {
+                gallery.masterPages[i].swipeview1.reset(genData(100));
+                gallery.masterPages[i].swipeview2.reset(genData(100));
+                gallery.masterPages[i].swipeview3.reset(genData(100));
+                gallery.masterPages[i].swipeview4.reset(genData(100));
+            }
+            
+		}
+	}
+	
+});
+
+</script>
+</body>
+</html>
