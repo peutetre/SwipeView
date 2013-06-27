@@ -259,8 +259,11 @@ var VerticalSwipeView = (function (window, document) {
 				case moveEvent:
 					this.__move(e);
 					break;
-				case cancelEvent:
-				case "mouseout":
+                case "mouseout":
+                    if (!this.initiated) { break; }
+                    else if ( e.toElement == document.childNodes[1]) { }
+                    else if ( e.toElement != this.wrapper.parentNode ) { break; }
+                case cancelEvent:
 				case endEvent:
 					this.__end(e);
 					break;
