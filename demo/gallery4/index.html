@@ -7,7 +7,7 @@
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 	<title>SwipeView</title>
 	<link href="style.css" rel="stylesheet" type="text/css">
-	<script type="text/javascript" src="../../src/verticalswipeview.js"></script>
+	<script type="text/javascript" src="../../src/swipeview.js"></script>
 </head>
 
 <body>
@@ -52,7 +52,7 @@ var	gallery,
 		}
 	];
 
-gallery = new VerticalSwipeView('#wrapper', { numberOfPages: slides.length, hastyPageFlip:true });
+gallery = new SwipeView('#wrapper', { numberOfPages: slides.length, hastyPageFlip:true, vertical:true});
 
 // Load initial data
 for (i=0; i<3; i++) {

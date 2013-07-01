@@ -7,7 +7,6 @@
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 	<title>SwipeView</title>
 	<link href="style.css" rel="stylesheet" type="text/css">
-	<script type="text/javascript" src="../../src/verticalswipeview.js"></script>
 	<script type="text/javascript" src="../../src/swipeview.js"></script>
 	<script type="text/javascript" src="infinitegraphset.js"></script>
 </head>
@@ -47,7 +46,7 @@ var	gallery,
 	i,
 	page;
 
-gallery = new VerticalSwipeView('#wrapper', { numberOfPages: 100, hastyPageFlip:true});
+gallery = new SwipeView('#wrapper', { numberOfPages: 100, hastyPageFlip:true, vertical:true});
 
 // Load initial data
 for (i=0; i<3; i++) {
