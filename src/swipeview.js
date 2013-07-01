@@ -70,7 +70,9 @@ var SwipeView = (function (window, document) {
                 snapThreshold: null,
                 hastyPageFlip: false,
                 vertical: false,
-                loop: true
+                loop: true,
+                clientWidth: 1024,
+                clientHeight: 145
             };
 
             // User defined options
@@ -171,9 +173,8 @@ var SwipeView = (function (window, document) {
         },
 
         refreshSize: function () {
-            // FIXME, get container width/height if wrapper width/height equals 0
-            this.wrapperWidth = this.wrapper.clientWidth === 0 ? 1024 : this.wrapper.clientWidth;
-            this.wrapperHeight = this.wrapper.clientHeight === 0 ? 145 : this.wrapper.clientHeight;
+            this.wrapperWidth = this.wrapper.clientWidth === 0 ? this.options.clientWidth : this.wrapper.clientWidth;
+            this.wrapperHeight = this.wrapper.clientHeight === 0 ? this.options.clientHeight : this.wrapper.clientHeight;
             this.wrapperSize = this.options.vertical ? this.wrapperHeight : this.wrapperWidth;
             this.pageSize = this.options.vertical ? this.wrapperHeight : this.wrapperWidth;
             this.maxX = -this.options.numberOfPages * this.pageSize + this.wrapperSize;
