@@ -1,0 +1,30 @@
+{
+  "name": "swipeview",
+  "version": "1.0.5",
+  "description": "Virtually infinite loop-able horizontal carousel - a fork of the original SwipeView from Matteo",
+  "keywords": [
+    "swipe",
+    "mobile",
+    "carousel",
+    "infinite"
+  ],
+  "author": "Matteo Spinelli <matteo@cubiq.org> (http://cubiq.org/)",
+  "contributors": [{
+    "name" : "Paul Panserrieu",
+    "email": "paul@42loops.com",
+    "url" : "http://42loops.com"
+  }],
+  "dependencies" : { },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.6.0",
+    "grunt-contrib-uglify": "~0.2.2",
+    "grunt-contrib-watch": "~0.4.4"
+  },
+  "main": "src/swipeview.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:peutetre/SwipeView.git"
+  }
+}
