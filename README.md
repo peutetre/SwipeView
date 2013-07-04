@@ -1,4 +1,4 @@
-SwipeView v1.0.4 - 2013-07-01
+SwipeView v1.0.5 - 2013-07-04
 =============================
 
 Modified version of Matteo's SwipeView which allows vertical swipe (with the `vertical` option) and also allows multiple SwipeViews in the same document:
