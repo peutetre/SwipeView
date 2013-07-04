@@ -2,6 +2,7 @@
  * SwipeView v1.0 ~ Copyright (c) 2012 Matteo Spinelli, http://cubiq.org
  * Released under MIT license, http://cubiq.org/license
  */
+
 var SwipeView = (function (window, document) {
     var dummyStyle = document.createElement('div').style,
         vendor = (function () {
@@ -108,10 +109,10 @@ var SwipeView = (function (window, document) {
 
             div = document.createElement('div');
             div.className = 'swipeview-slider';
-            div.style.cssText = 'position:relative;top:0;height:100%;width:100%;'
-                + cssVendor + 'transition-duration:0;'
-                + cssVendor + 'transform:translateZ(0);'
-                + cssVendor + 'transition-timing-function:ease-out';
+            div.style.cssText = 'position:relative;top:0;height:100%;width:100%;' +
+                cssVendor + 'transition-duration:0;' +
+                cssVendor + 'transform:translateZ(0);' +
+                cssVendor + 'transition-timing-function:ease-out';
             this.wrapper.appendChild(div);
             this.slider = div;
 
@@ -119,9 +120,9 @@ var SwipeView = (function (window, document) {
 
             for (i=-1; i<2; i++) {
                 div = document.createElement('div');
-                div.style.cssText = cssVendor
-                    + 'transform:translateZ(0);position:absolute;top:0;height:100%;width:100%;'
-                    + this.cssPosition + ':' + i*100 + '%';
+                div.style.cssText = cssVendor +
+                    'transform:translateZ(0);position:absolute;top:0;height:100%;width:100%;' +
+                    this.cssPosition + ':' + i*100 + '%';
                 if (!div.dataset) div.dataset = {};
                 pageIndex = i == -1 ? this.options.numberOfPages - 1 : i;
                 div.dataset.pageIndex = pageIndex;
@@ -218,7 +219,8 @@ var SwipeView = (function (window, document) {
             this.masterPages[this.currentMasterPage].className = this.masterPages[this.currentMasterPage].className.replace(/(^|\s)swipeview-active(\s|$)/, '');
             for (i=0; i<3; i++) {
                 className = this.masterPages[i].className;
-                /(^|\s)swipeview-loading(\s|$)/.test(className) || (this.masterPages[i].className = !className ? 'swipeview-loading' : className + ' swipeview-loading');
+                if(!/(^|\s)swipeview-loading(\s|$)/.test(className))
+                    this.masterPages[i].className = !className ? 'swipeview-loading' : className + ' swipeview-loading';
             }
 
             p = p < 0 ? 0 : p > this.options.numberOfPages-1 ? this.options.numberOfPages-1 : p;
@@ -278,27 +280,26 @@ var SwipeView = (function (window, document) {
 
         handleEvent: function (e) {
             switch (e.type) {
-                case startEvent:
-                    this.__start(e);
-                    break;
-                case moveEvent:
-                    this.__move(e);
-                    break;
-                case "mouseout":
-                    if (!this.initiated) { break; }
-                    else if ( e.toElement == document.childNodes[1]) { }
-                    else if ( e.toElement != this.wrapper.parentNode ) { break; }
-                case cancelEvent:
-                case endEvent:
-                    this.__end(e);
-                    break;
-                case resizeEvent:
-                    this.__resize();
-                    break;
-                case transitionEndEvent:
-                case 'otransitionend':
-                    if (e.target == this.slider && !this.options.hastyPageFlip) this.__flip();
-                    break;
+            case startEvent:
+                this.__start(e);
+                break;
+            case moveEvent:
+                this.__move(e);
+                break;
+            case "mouseout":
+                if (this.initiated &&  e.toElement == document.childNodes[1]) this.__end();
+                break;
+            case cancelEvent:
+            case endEvent:
+                this.__end(e);
+                break;
+            case resizeEvent:
+                this.__resize();
+                break;
+            case transitionEndEvent:
+            case 'otransitionend':
+                if (e.target == this.slider && !this.options.hastyPageFlip) this.__flip();
+                break;
             }
         },
 
@@ -410,12 +411,12 @@ var SwipeView = (function (window, document) {
             var point;
 
             if(hasTouch) {
-                var i=0, l=e.touches.length;
+                var i=0, l = e.touches.length;
                 for(;i<l;i++) {
                     if (e.touches.item(i).identifier === this.identifier)
                         return;
                 }
-                i = 0, l = e.changedTouches.length;
+                i = 0; l = e.changedTouches.length;
                 for(;i<l;i++) {
                     if(e.changedTouches.item(i).identifier === this.identifier)
                         point = e.changedTouches.item(i);
@@ -484,11 +485,13 @@ var SwipeView = (function (window, document) {
 
             // Add active class to current page
             className = this.masterPages[this.currentMasterPage].className;
-            /(^|\s)swipeview-active(\s|$)/.test(className) || (this.masterPages[this.currentMasterPage].className = !className ? 'swipeview-active' : className + ' swipeview-active');
+            if(!/(^|\s)swipeview-active(\s|$)/.test(className))
+                this.masterPages[this.currentMasterPage].className = !className ? 'swipeview-active' : className + ' swipeview-active';
 
             // Add loading class to flipped page
             className = this.masterPages[pageFlip].className;
-            /(^|\s)swipeview-loading(\s|$)/.test(className) || (this.masterPages[pageFlip].className = !className ? 'swipeview-loading' : className + ' swipeview-loading');
+            if(!/(^|\s)swipeview-loading(\s|$)/.test(className))
+                this.masterPages[pageFlip].className = !className ? 'swipeview-loading' : className + ' swipeview-loading';
 
             pageFlipIndex = pageFlipIndex - Math.floor(pageFlipIndex / this.options.numberOfPages) * this.options.numberOfPages;
             this.masterPages[pageFlip].dataset.upcomingPageIndex = pageFlipIndex;        // Index to be loaded in the newly flipped page
