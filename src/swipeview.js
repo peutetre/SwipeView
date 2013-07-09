@@ -372,6 +372,8 @@ var SwipeView = (function (window, document) {
                 newC = this.options.vertical ? this.k + deltaY : this.k + deltaX,
                 dist = this.options.vertical ? Math.abs(point.pageY - this.startY): Math.abs(point.pageX - this.startX);
 
+            if (Math.abs(dist) >= this.pageSize) { return; }
+
             this.moved = true;
             this.pointX = point.pageX;
             this.pointY = point.pageY;
