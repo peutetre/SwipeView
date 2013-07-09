@@ -287,7 +287,12 @@ var SwipeView = (function (window, document) {
                 this.__move(e);
                 break;
             case "mouseout":
-                if (this.initiated &&  e.toElement == document.childNodes[1]) this.__end();
+                if (this.initiated) {
+                    var elts = this.wrapper.getElementsByTagName('*');
+                    for (var i=0; i< elts.length; i++)
+                        if( e.toElement == elts[i]) return;
+                    this.__end(e);
+                }
                 break;
             case cancelEvent:
             case endEvent:
