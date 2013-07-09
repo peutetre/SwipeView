@@ -2,6 +2,14 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    connect: {
+        server: {
+            options: {
+                base: "",
+                port: 9999
+            }
+        }
+    },
     uglify: {
       options: {
         banner: '/*! <%= pkg.name %> <%= pkg.version %> - <%= pkg.description %> */\n'
@@ -18,15 +26,17 @@ module.exports = function(grunt) {
     },
     watch: {
       all: {
-        files: ['src/*.js'],
-        tasks: ['default']
+        files: ['src/*.js', 'demo/*/*.js'],
+        tasks: ['default', 'dev']
       }
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
 
   grunt.registerTask('default', ['jshint', 'uglify']);
+  grunt.registerTask("dev", ["connect", "watch"]);
 };
