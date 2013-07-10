@@ -159,22 +159,22 @@ var SwipeView = (function (window, document) {
 
         onFlip: function (fn) {
             this.wrapper.addEventListener(this.id + 'swipeview-flip', fn, false);
-            this.customEvents.push(['flip', fn]);
+            this.customEvents.push([this.id + 'flip', fn]);
         },
 
         onMoveOut: function (fn) {
             this.wrapper.addEventListener(this.id + 'swipeview-moveout', fn, false);
-            this.customEvents.push(['moveout', fn]);
+            this.customEvents.push([this.id + 'moveout', fn]);
         },
 
         onMoveIn: function (fn) {
             this.wrapper.addEventListener(this.id + 'swipeview-movein', fn, false);
-            this.customEvents.push(['movein', fn]);
+            this.customEvents.push([this.id + 'movein', fn]);
         },
 
         onTouchStart: function (fn) {
             this.wrapper.addEventListener(this.id + 'swipeview-touchstart', fn, false);
-            this.customEvents.push(['touchstart', fn]);
+            this.customEvents.push([this.id + 'touchstart', fn]);
         },
 
         destroy: function () {
@@ -532,7 +532,7 @@ var SwipeView = (function (window, document) {
         __event: function (type) {
             var ev = document.createEvent("Event");
 
-            ev.initEvent(this.id + '-swipeview-' + type, true, true);
+            ev.initEvent(this.id + 'swipeview-' + type, true, true);
 
             this.wrapper.dispatchEvent(ev);
         }
