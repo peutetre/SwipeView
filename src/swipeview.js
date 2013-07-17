@@ -460,6 +460,12 @@ var SwipeView = (function (window, document) {
             this.__checkPosition();
         },
 
+        abort: function () {
+          if (!this.initiated) return;
+          this.__pos(-this.page * this.pageSize);
+          this.initiated = false;
+        },
+
         __checkPosition: function () {
             var pageFlip,
                 pageFlipIndex,
