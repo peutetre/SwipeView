@@ -4,7 +4,54 @@
  */
 
 var SwipeView = (function (window, document) {
-    var dummyStyle = document.createElement('div').style,
+  
+  /**
+   * MicroEvent - https://github.com/jeromeetienne/microevent.js
+   *
+Copyright (c) 2011 Jerome Etienne, http://jetienne.com
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+   */
+  var MicroEvent = function(){};
+  MicroEvent.prototype = {
+    bind: function(event, fct){
+      this._events = this._events || {};
+      this._events[event] = this._events[event] || [];
+      this._events[event].push(fct);
+    },
+    unbind: function(event, fct){
+      this._events = this._events || {};
+      if( event in this._events === false  ) return;
+      this._events[event].splice(this._events[event].indexOf(fct), 1);
+    },
+    trigger: function(event /* , args... */){
+      this._events = this._events || {};
+      if( event in this._events === false  ) return;
+      for(var i = 0; i < this._events[event].length; i++){
+        this._events[event][i].apply(this, Array.prototype.slice.call(arguments, 1));
+      }
+    }
+  };
+
+
+  var dummyStyle = document.createElement('div').style,
         vendor = (function () {
             var vendors = 't,webkitT,MozT,msT,OT'.split(','),
                 t,
@@ -55,6 +102,48 @@ var SwipeView = (function (window, document) {
             return transitionEnd[vendor];
         })(),
 
+        //~~~ IE polyfills
+        on = function (el, evt, fn, bubble) {
+          if("addEventListener" in el) {
+            el.addEventListener(evt, fn, bubble);
+          } else if("attachEvent" in el) {
+            if(typeof fn == "object" && fn.handleEvent) {
+              el.attachEvent("on" + evt, function(e){
+                fn.handleEvent.call(fn, e);
+              });
+            } else {
+              el.attachEvent("on" + evt, fn);
+            }
+          }
+        },
+        off = function (el, evt, fn) {
+          if("removeEventListener" in el) {
+            el.removeEventListener(evt, fn);
+          }
+          else if ("detachEvent" in el) {
+            el.detachEvent(evt, fn);
+          }
+        },
+        preventDefault = function (e) {
+          if (e.preventDefault) e.preventDefault();
+          else e.returnValue = false;
+        },
+        getPageX = function (e) {
+          if ('pageX' in e)
+            return e.pageX;
+          else
+            return e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+          return 0;
+        },
+        getPageY = function (e) {
+          if ('pageY' in e)
+            return e.pageY;
+          else
+            return e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+          return 0;
+        },
+        //~~~ end of IE polyfills
+
         uuid = 0,
 
         SwipeView = function (el, options) {
@@ -84,6 +173,7 @@ var SwipeView = (function (window, document) {
             this.maxK = 0;
             this.page = 0;
             this.pageIndex = 0;
+            this.E = new MicroEvent();
             this.customEvents = [];
             this.wrapperWidth = 0;
             this.wrapperHeight = 0;
@@ -137,16 +227,16 @@ var SwipeView = (function (window, document) {
             className = this.masterPages[1].className;
             this.masterPages[1].className = !className ? 'swipeview-active' : className + ' swipeview-active';
 
-            window.addEventListener(resizeEvent, this, false);
-            this.wrapper.addEventListener(startEvent, this, false);
-            this.wrapper.addEventListener(moveEvent, this, false);
-            this.wrapper.addEventListener(endEvent, this, false);
-            this.slider.addEventListener(transitionEndEvent, this, false);
+            on(window, resizeEvent, this, false);
+            on(this.wrapper, startEvent, this, false);
+            on(this.wrapper, moveEvent, this, false);
+            on(this.wrapper, endEvent, this, false);
+            on(this.slider, transitionEndEvent, this, false);
             // in Opera >= 12 the transitionend event is lowercase so we register both events
-            if ( vendor == 'O' ) this.slider.addEventListener(transitionEndEvent.toLowerCase(), this, false);
+            if ( vendor == 'O' ) on(this.slider, transitionEndEvent.toLowerCase(), this, false);
 
             if (!hasTouch) {
-                this.wrapper.addEventListener('mouseout', this, false);
+                on(this.wrapper, 'mouseout', this, false);
             }
         };
 
@@ -158,40 +248,40 @@ var SwipeView = (function (window, document) {
         },
 
         onFlip: function (fn) {
-            this.wrapper.addEventListener(this.id + 'swipeview-flip', fn, false);
-            this.customEvents.push([this.id + 'flip', fn]);
+          this.E.bind(this.id + 'flip', fn);
+          this.customEvents.push([this.id + 'flip', fn]);
         },
 
         onMoveOut: function (fn) {
-            this.wrapper.addEventListener(this.id + 'swipeview-moveout', fn, false);
+            this.E.bind(this.id + 'moveout', fn);
             this.customEvents.push([this.id + 'moveout', fn]);
         },
 
         onMoveIn: function (fn) {
-            this.wrapper.addEventListener(this.id + 'swipeview-movein', fn, false);
+            this.E.bind(this.id + 'movein', fn);
             this.customEvents.push([this.id + 'movein', fn]);
         },
 
         onTouchStart: function (fn) {
-            this.wrapper.addEventListener(this.id + 'swipeview-touchstart', fn, false);
+            this.E.bind(this.id + 'touchstart', fn);
             this.customEvents.push([this.id + 'touchstart', fn]);
         },
 
         destroy: function () {
             while ( this.customEvents.length ) {
-                this.wrapper.removeEventListener(this.id + 'swipeview-' + this.customEvents[0][0], this.customEvents[0][1], false);
+                this.E.unbind(this.customEvents[0][0], this.customEvents[0][1]);
                 this.customEvents.shift();
             }
 
             // Remove the event listeners
-            window.removeEventListener(resizeEvent, this, false);
-            this.wrapper.removeEventListener(startEvent, this, false);
-            this.wrapper.removeEventListener(moveEvent, this, false);
-            this.wrapper.removeEventListener(endEvent, this, false);
-            this.slider.removeEventListener(transitionEndEvent, this, false);
+            off(window, resizeEvent, this, false);
+            off(this.wrapper, startEvent, this, false);
+            off(this.wrapper, moveEvent, this, false);
+            off(this.wrapper, endEvent, this, false);
+            off(this.slider, transitionEndEvent, this, false);
 
             if (!hasTouch) {
-                this.wrapper.removeEventListener('mouseout', this, false);
+                off(this.wrapper, 'mouseout', this, false);
             }
         },
 
@@ -316,7 +406,17 @@ var SwipeView = (function (window, document) {
         */
         __pos: function (k) {
             this.k = k;
-            this.slider.style[transform] = (this.options.vertical ? 'translate(0,' + k + 'px)' : 'translate(' + k + 'px,0)') + translateZ;
+            if (hasTransform) {
+              this.slider.style[transform] = (this.options.vertical ? 'translate(0,' + k + 'px)' : 'translate(' + k + 'px,0)') + translateZ;
+            }
+            else {
+              if (this.options.vertical) {
+                this.slider.style.top = k+"px";
+              }
+              else {
+                this.slider.style.left = k+"px";
+              }
+            }
         },
 
         __resize: function () {
@@ -336,10 +436,10 @@ var SwipeView = (function (window, document) {
             this.identifier = point.identifier;
             this.moved = false;
             this.thresholdExceeded = false;
-            this.startX = point.pageX;
-            this.startY = point.pageY;
-            this.pointX = point.pageX;
-            this.pointY = point.pageY;
+            this.startX = getPageX(point);
+            this.startY = getPageY(point);
+            this.pointX = getPageX(point);
+            this.pointY = getPageY(point);
             this.stepsX = 0;
             this.stepsY = 0;
             this.direction = 0;
@@ -347,7 +447,7 @@ var SwipeView = (function (window, document) {
 
             this.slider.style[transitionDuration] = '0s';
 
-            this.__event('touchstart');
+            this.E.trigger('touchstart');
         },
 
         __move: function (e) {
@@ -367,16 +467,16 @@ var SwipeView = (function (window, document) {
                 point = e;
             }
 
-            var deltaX = point.pageX - this.pointX,
-                deltaY = point.pageY - this.pointY,
+            var deltaX = getPageX(point) - this.pointX,
+                deltaY = getPageY(point) - this.pointY,
                 newC = this.options.vertical ? this.k + deltaY : this.k + deltaX,
-                dist = this.options.vertical ? Math.abs(point.pageY - this.startY): Math.abs(point.pageX - this.startX);
+                dist = this.options.vertical ? Math.abs(getPageY(point) - this.startY): Math.abs(getPageX(point) - this.startX);
 
             if (Math.abs(dist) >= this.pageSize) { return; }
 
             this.moved = true;
-            this.pointX = point.pageX;
-            this.pointY = point.pageY;
+            this.pointX = getPageX(point);
+            this.pointY = getPageY(point);
             this.direction = this.options.vertical ? (deltaY > 0 ? 1 : deltaY < 0 ? -1 : 0): (deltaX > 0 ? 1 : deltaX < 0 ? -1 : 0);
             this.stepsX += Math.abs(deltaX);
             this.stepsY += Math.abs(deltaY);
@@ -393,7 +493,7 @@ var SwipeView = (function (window, document) {
                 return;
             }
 
-            e.preventDefault();
+            preventDefault(e);
 
             this.directionLocked = true;
 
@@ -403,10 +503,10 @@ var SwipeView = (function (window, document) {
 
             if (!this.thresholdExceeded && dist >= this.snapThreshold) {
                 this.thresholdExceeded = true;
-                this.__event('moveout');
+                this.E.trigger('moveout');
             } else if (this.thresholdExceeded && dist < this.snapThreshold) {
                 this.thresholdExceeded = false;
-                this.__event('movein');
+                this.E.trigger('movein');
             }
 
             this.__pos(newC);
@@ -438,7 +538,7 @@ var SwipeView = (function (window, document) {
                 point = e;
             }
 
-            var dist = this.options.vertical ? Math.abs(point.pageY - this.startY) : Math.abs(point.pageX - this.startX);
+            var dist = this.options.vertical ? Math.abs(getPageY(point) - this.startY) : Math.abs(getPageX(point) - this.startX);
 
 
             this.initiated = false;
@@ -447,7 +547,7 @@ var SwipeView = (function (window, document) {
 
             if (!this.options.loop && (this.k > 0 || this.k < this.maxK)) {
                 dist = 0;
-                this.__event('movein');
+                this.E.trigger('movein');
             }
 
             // Check if we exceeded the snap threshold
@@ -527,20 +627,12 @@ var SwipeView = (function (window, document) {
         },
 
         __flip: function () {
-            this.__event('flip');
+            this.E.trigger('flip');
 
             for (var i=0; i<3; i++) {
                 this.masterPages[i].className = this.masterPages[i].className.replace(/(^|\s)swipeview-loading(\s|$)/, '');        // Remove the loading class
                 this.masterPages[i].dataset.pageIndex = this.masterPages[i].dataset.upcomingPageIndex;
             }
-        },
-
-        __event: function (type) {
-            var ev = document.createEvent("Event");
-
-            ev.initEvent(this.id + 'swipeview-' + type, true, true);
-
-            this.wrapper.dispatchEvent(ev);
         }
     };
 
