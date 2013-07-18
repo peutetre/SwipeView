@@ -5,6 +5,13 @@
 
 var SwipeView = (function (window, document) {
   
+
+  function indexOf (array, el) {
+    var i;
+    for (i=array.length-1; i>-1 && array[i]!==el; --i);
+    return i;
+  }
+
   /**
    * MicroEvent - https://github.com/jeromeetienne/microevent.js
    *
@@ -39,7 +46,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     unbind: function(event, fct){
       this._events = this._events || {};
       if( event in this._events === false  ) return;
-      this._events[event].splice(this._events[event].indexOf(fct), 1);
+      this._events[event].splice(indexOf(this._events[event], fct), 1);
     },
     trigger: function(event /* , args... */){
       this._events = this._events || {};
@@ -107,13 +114,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           if("addEventListener" in el) {
             el.addEventListener(evt, fn, bubble);
           } else if("attachEvent" in el) {
-            if(typeof fn == "object" && fn.handleEvent) {
-              el.attachEvent("on" + evt, function(e){
-                fn.handleEvent.call(fn, e);
-              });
-            } else {
-              el.attachEvent("on" + evt, fn);
-            }
+            el.attachEvent("on" + evt, fn);
           }
         },
         off = function (el, evt, fn) {
@@ -121,7 +122,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             el.removeEventListener(evt, fn);
           }
           else if ("detachEvent" in el) {
-            el.detachEvent(evt, fn);
+            el.detachEvent("on" + evt, fn);
           }
         },
         preventDefault = function (e) {
@@ -227,16 +228,22 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             className = this.masterPages[1].className;
             this.masterPages[1].className = !className ? 'swipeview-active' : className + ' swipeview-active';
 
-            on(window, resizeEvent, this, false);
-            on(this.wrapper, startEvent, this, false);
-            on(this.wrapper, moveEvent, this, false);
-            on(this.wrapper, endEvent, this, false);
-            on(this.slider, transitionEndEvent, this, false);
+            // handleEventF is used for binding function (required for IE)
+            var self = this;
+            this.handleEventF = function (e) {
+              self.handleEvent(e);
+            };
+
+            on(window, resizeEvent, this.handleEventF, false);
+            on(this.wrapper, startEvent, this.handleEventF, false);
+            on(this.wrapper, moveEvent, this.handleEventF, false);
+            on(this.wrapper, endEvent, this.handleEventF, false);
+            on(this.slider, transitionEndEvent, this.handleEventF, false);
             // in Opera >= 12 the transitionend event is lowercase so we register both events
-            if ( vendor == 'O' ) on(this.slider, transitionEndEvent.toLowerCase(), this, false);
+            if ( vendor == 'O' ) on(this.slider, transitionEndEvent.toLowerCase(), this.handleEventF, false);
 
             if (!hasTouch) {
-                on(this.wrapper, 'mouseout', this, false);
+                on(this.wrapper, 'mouseout', this.handleEventF, false);
             }
         };
 
@@ -248,23 +255,23 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         },
 
         onFlip: function (fn) {
-          this.E.bind(this.id + 'flip', fn);
-          this.customEvents.push([this.id + 'flip', fn]);
+          this.E.bind('flip', fn);
+          this.customEvents.push(['flip', fn]);
         },
 
         onMoveOut: function (fn) {
-            this.E.bind(this.id + 'moveout', fn);
-            this.customEvents.push([this.id + 'moveout', fn]);
+            this.E.bind('moveout', fn);
+            this.customEvents.push(['moveout', fn]);
         },
 
         onMoveIn: function (fn) {
-            this.E.bind(this.id + 'movein', fn);
-            this.customEvents.push([this.id + 'movein', fn]);
+            this.E.bind('movein', fn);
+            this.customEvents.push(['movein', fn]);
         },
 
         onTouchStart: function (fn) {
-            this.E.bind(this.id + 'touchstart', fn);
-            this.customEvents.push([this.id + 'touchstart', fn]);
+            this.E.bind('touchstart', fn);
+            this.customEvents.push(['touchstart', fn]);
         },
 
         destroy: function () {
@@ -274,14 +281,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             }
 
             // Remove the event listeners
-            off(window, resizeEvent, this, false);
-            off(this.wrapper, startEvent, this, false);
-            off(this.wrapper, moveEvent, this, false);
-            off(this.wrapper, endEvent, this, false);
-            off(this.slider, transitionEndEvent, this, false);
+            off(window, resizeEvent, this.handleEventF);
+            off(this.wrapper, startEvent, this.handleEventF);
+            off(this.wrapper, moveEvent, this.handleEventF);
+            off(this.wrapper, endEvent, this.handleEventF);
+            off(this.slider, transitionEndEvent, this.handleEventF);
 
             if (!hasTouch) {
-                off(this.wrapper, 'mouseout', this, false);
+                off(this.wrapper, 'mouseout', this.handleEventF);
             }
         },
 
