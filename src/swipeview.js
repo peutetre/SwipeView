@@ -274,11 +274,18 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             this.customEvents.push(['touchstart', fn]);
         },
 
-        destroy: function () {
+        /**
+         * Removes all external events callbacks
+         */
+        unbind : function(){
             while ( this.customEvents.length ) {
                 this.E.unbind(this.customEvents[0][0], this.customEvents[0][1]);
                 this.customEvents.shift();
             }
+        },
+
+        destroy: function () {
+            this.unbind();
 
             // Remove the event listeners
             off(window, resizeEvent, this.handleEventF);
