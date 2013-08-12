@@ -363,7 +363,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                 this.masterPages[0].dataset.upcomingPageIndex = this.page == this.options.numberOfPages-1 ? 0 : this.page + 1;
             }
 
-            this.__flip();
+            this.__flip( true );
         },
 
         next: function () {
@@ -640,8 +640,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             }
         },
 
-        __flip: function () {
-            this.E.trigger('flip');
+        __flip: function ( fromGoTo ) {
+            this.E.trigger('flip', { triggeredByGoto : !!fromGoTo });
 
             for (var i=0; i<3; i++) {
                 this.masterPages[i].className = this.masterPages[i].className.replace(/(^|\s)swipeview-loading(\s|$)/, '');        // Remove the loading class
