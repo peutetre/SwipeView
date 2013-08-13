@@ -337,31 +337,22 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
             this.masterPages[this.currentMasterPage].className = this.masterPages[this.currentMasterPage].className + ' swipeview-active';
 
-            if (this.currentMasterPage === 0) {
-                this.masterPages[2].style[this.cssPosition] = this.page * 100 - 100 + '%';
-                this.masterPages[0].style[this.cssPosition] = this.page * 100 + '%';
-                this.masterPages[1].style[this.cssPosition] = this.page * 100 + 100 + '%';
 
-                this.masterPages[2].dataset.upcomingPageIndex = this.page === 0 ? this.options.numberOfPages-1 : this.page - 1;
-                this.masterPages[0].dataset.upcomingPageIndex = this.page;
-                this.masterPages[1].dataset.upcomingPageIndex = this.page == this.options.numberOfPages-1 ? 0 : this.page + 1;
-            } else if (this.currentMasterPage == 1) {
-                this.masterPages[0].style[this.cssPosition] = this.page * 100 - 100 + '%';
-                this.masterPages[1].style[this.cssPosition] = this.page * 100 + '%';
-                this.masterPages[2].style[this.cssPosition] = this.page * 100 + 100 + '%';
+            var indices = (function calculatePagesIndexFromCurrent( currentMasterPage ){
+                if (currentMasterPage === 0)      return [2, 0, 1];
+                else if (currentMasterPage === 1) return [0, 1, 2];
+                else                              return [1, 2, 0];
+            })(this.currentMasterPage);
 
-                this.masterPages[0].dataset.upcomingPageIndex = this.page === 0 ? this.options.numberOfPages-1 : this.page - 1;
-                this.masterPages[1].dataset.upcomingPageIndex = this.page;
-                this.masterPages[2].dataset.upcomingPageIndex = this.page == this.options.numberOfPages-1 ? 0 : this.page + 1;
-            } else {
-                this.masterPages[1].style[this.cssPosition] = this.page * 100 - 100 + '%';
-                this.masterPages[2].style[this.cssPosition] = this.page * 100 + '%';
-                this.masterPages[0].style[this.cssPosition] = this.page * 100 + 100 + '%';
+            this.masterPages[ indices[0] ].style[this.cssPosition] = this.page * 100 - 100 + '%';
+            this.masterPages[ indices[1] ].style[this.cssPosition] = this.page * 100 + '%';
+            this.masterPages[ indices[2] ].style[this.cssPosition] = this.page * 100 + 100 + '%';
 
-                this.masterPages[1].dataset.upcomingPageIndex = this.page === 0 ? this.options.numberOfPages-1 : this.page - 1;
-                this.masterPages[2].dataset.upcomingPageIndex = this.page;
-                this.masterPages[0].dataset.upcomingPageIndex = this.page == this.options.numberOfPages-1 ? 0 : this.page + 1;
-            }
+            this.masterPages[ indices[0] ].dataset.upcomingPageIndex = this.page === 0 ? 
+                (this.options.loop ? this.options.numberOfPages-1 : undefined ): this.page - 1;
+            this.masterPages[ indices[1] ].dataset.upcomingPageIndex = this.page;
+            this.masterPages[ indices[2] ].dataset.upcomingPageIndex = this.page == this.options.numberOfPages-1 ? 
+                (this.options.loop ? 0 : undefined ): this.page + 1;
 
             this.__flip( true );
         },
