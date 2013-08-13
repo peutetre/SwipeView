@@ -589,6 +589,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                 this.masterPages[pageFlip].style[this.cssPosition] = this.page * 100 - 100 + '%';
 
                 pageFlipIndex = this.page - 1;
+                pageFlipIndex = pageFlipIndex - Math.floor(pageFlipIndex / this.options.numberOfPages) * this.options.numberOfPages;
+                pageFlipIndex = pageFlipIndex === this.options.numberOfPages && !this.options.loop ? undefined : pageFlipIndex;
             } else {
                 this.page = -Math.floor(this.k / this.pageSize);
                 this.currentMasterPage = (this.page + 1) - Math.floor((this.page + 1) / 3) * 3;
@@ -599,6 +601,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                 this.masterPages[pageFlip].style[this.cssPosition] = this.page * 100 + 100 + '%';
 
                 pageFlipIndex = this.page + 1;
+                pageFlipIndex = pageFlipIndex - Math.floor(pageFlipIndex / this.options.numberOfPages) * this.options.numberOfPages;
+                pageFlipIndex = pageFlipIndex === 0 && !this.options.loop ? undefined : pageFlipIndex;
             }
 
             // Add active class to current page
@@ -611,7 +615,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             if(!/(^|\s)swipeview-loading(\s|$)/.test(className))
                 this.masterPages[pageFlip].className = !className ? 'swipeview-loading' : className + ' swipeview-loading';
 
-            pageFlipIndex = pageFlipIndex - Math.floor(pageFlipIndex / this.options.numberOfPages) * this.options.numberOfPages;
             this.masterPages[pageFlip].dataset.upcomingPageIndex = pageFlipIndex;        // Index to be loaded in the newly flipped page
 
             newC = -this.page * this.pageSize;
