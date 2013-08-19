@@ -337,31 +337,22 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
             this.masterPages[this.currentMasterPage].className = this.masterPages[this.currentMasterPage].className + ' swipeview-active';
 
-            if (this.currentMasterPage === 0) {
-                this.masterPages[2].style[this.cssPosition] = this.page * 100 - 100 + '%';
-                this.masterPages[0].style[this.cssPosition] = this.page * 100 + '%';
-                this.masterPages[1].style[this.cssPosition] = this.page * 100 + 100 + '%';
 
-                this.masterPages[2].dataset.upcomingPageIndex = this.page === 0 ? this.options.numberOfPages-1 : this.page - 1;
-                this.masterPages[0].dataset.upcomingPageIndex = this.page;
-                this.masterPages[1].dataset.upcomingPageIndex = this.page == this.options.numberOfPages-1 ? 0 : this.page + 1;
-            } else if (this.currentMasterPage == 1) {
-                this.masterPages[0].style[this.cssPosition] = this.page * 100 - 100 + '%';
-                this.masterPages[1].style[this.cssPosition] = this.page * 100 + '%';
-                this.masterPages[2].style[this.cssPosition] = this.page * 100 + 100 + '%';
+            var indices = (function calculatePagesIndexFromCurrent( currentMasterPage ){
+                if (currentMasterPage === 0)      return [2, 0, 1];
+                else if (currentMasterPage === 1) return [0, 1, 2];
+                else                              return [1, 2, 0];
+            })(this.currentMasterPage);
 
-                this.masterPages[0].dataset.upcomingPageIndex = this.page === 0 ? this.options.numberOfPages-1 : this.page - 1;
-                this.masterPages[1].dataset.upcomingPageIndex = this.page;
-                this.masterPages[2].dataset.upcomingPageIndex = this.page == this.options.numberOfPages-1 ? 0 : this.page + 1;
-            } else {
-                this.masterPages[1].style[this.cssPosition] = this.page * 100 - 100 + '%';
-                this.masterPages[2].style[this.cssPosition] = this.page * 100 + '%';
-                this.masterPages[0].style[this.cssPosition] = this.page * 100 + 100 + '%';
+            this.masterPages[ indices[0] ].style[this.cssPosition] = this.page * 100 - 100 + '%';
+            this.masterPages[ indices[1] ].style[this.cssPosition] = this.page * 100 + '%';
+            this.masterPages[ indices[2] ].style[this.cssPosition] = this.page * 100 + 100 + '%';
 
-                this.masterPages[1].dataset.upcomingPageIndex = this.page === 0 ? this.options.numberOfPages-1 : this.page - 1;
-                this.masterPages[2].dataset.upcomingPageIndex = this.page;
-                this.masterPages[0].dataset.upcomingPageIndex = this.page == this.options.numberOfPages-1 ? 0 : this.page + 1;
-            }
+            this.masterPages[ indices[0] ].dataset.upcomingPageIndex = this.page === 0 ? 
+                (this.options.loop ? this.options.numberOfPages-1 : undefined ): this.page - 1;
+            this.masterPages[ indices[1] ].dataset.upcomingPageIndex = this.page;
+            this.masterPages[ indices[2] ].dataset.upcomingPageIndex = this.page == this.options.numberOfPages-1 ? 
+                (this.options.loop ? 0 : undefined ): this.page + 1;
 
             this.__flip( true );
         },
@@ -598,6 +589,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                 this.masterPages[pageFlip].style[this.cssPosition] = this.page * 100 - 100 + '%';
 
                 pageFlipIndex = this.page - 1;
+                pageFlipIndex = pageFlipIndex - Math.floor(pageFlipIndex / this.options.numberOfPages) * this.options.numberOfPages;
+                pageFlipIndex = pageFlipIndex === this.options.numberOfPages && !this.options.loop ? undefined : pageFlipIndex;
             } else {
                 this.page = -Math.floor(this.k / this.pageSize);
                 this.currentMasterPage = (this.page + 1) - Math.floor((this.page + 1) / 3) * 3;
@@ -608,6 +601,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                 this.masterPages[pageFlip].style[this.cssPosition] = this.page * 100 + 100 + '%';
 
                 pageFlipIndex = this.page + 1;
+                pageFlipIndex = pageFlipIndex - Math.floor(pageFlipIndex / this.options.numberOfPages) * this.options.numberOfPages;
+                pageFlipIndex = pageFlipIndex === 0 && !this.options.loop ? undefined : pageFlipIndex;
             }
 
             // Add active class to current page
@@ -620,7 +615,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             if(!/(^|\s)swipeview-loading(\s|$)/.test(className))
                 this.masterPages[pageFlip].className = !className ? 'swipeview-loading' : className + ' swipeview-loading';
 
-            pageFlipIndex = pageFlipIndex - Math.floor(pageFlipIndex / this.options.numberOfPages) * this.options.numberOfPages;
             this.masterPages[pageFlip].dataset.upcomingPageIndex = pageFlipIndex;        // Index to be loaded in the newly flipped page
 
             newC = -this.page * this.pageSize;
