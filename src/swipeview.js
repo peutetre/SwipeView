@@ -219,8 +219,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                 div.dataset.pageIndex = pageIndex;
                 div.dataset.upcomingPageIndex = pageIndex;
 
-                if (!this.options.loop && i == -1) div.style.visibility = 'hidden';
-
                 this.slider.appendChild(div);
                 this.masterPages.push(div);
             }

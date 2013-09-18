@@ -1,6 +1,6 @@
 {
   "name": "swipeview",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Virtually infinite loop-able horizontal carousel - a fork of the original SwipeView from Matteo Spinelli",
   "keywords": [
     "swipe",
