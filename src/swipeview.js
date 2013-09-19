@@ -219,6 +219,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                 div.dataset.pageIndex = pageIndex;
                 div.dataset.upcomingPageIndex = pageIndex;
 
+                if (!this.options.loop && i == -1) {
+                  div.style.visibility = 'hidden';
+                }
+
                 this.slider.appendChild(div);
                 this.masterPages.push(div);
             }
@@ -351,6 +355,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             this.masterPages[ indices[1] ].dataset.upcomingPageIndex = this.page;
             this.masterPages[ indices[2] ].dataset.upcomingPageIndex = this.page == this.options.numberOfPages-1 ? 
                 (this.options.loop ? 0 : undefined ): this.page + 1;
+
+            if (!this.options.loop) {
+              this.masterPages[ indices[0] ].style.visibility = this.page === 0 ? "hidden" : "";
+              this.masterPages[ indices[1] ].style.visibility = "";
+              this.masterPages[ indices[2] ].style.visibility = this.page === this.options.numberOfPages-1 ? "hidden" : "";
+            }
 
             this.__flip( true );
         },
