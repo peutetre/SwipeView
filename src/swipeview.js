@@ -240,6 +240,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
     SwipeView.prototype = {
         bind: function () {
+            if (this._bound) throw new Error("SwipeView was already bounded");
+            this._bound = true;
             on(window, resizeEvent, this.handleEventF, false);
             on(this.wrapper, startEvent, this.handleEventF, false);
             on(this.wrapper, moveEvent, this.handleEventF, false);
@@ -255,6 +257,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         },
 
         unbind : function(){
+            if (!this._bound) throw new Error("SwipeView was not bounded");
+            this._bound = false;
             // Remove the event listeners
             off(window, resizeEvent, this.handleEventF);
             off(this.wrapper, startEvent, this.handleEventF);
