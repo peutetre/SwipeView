@@ -8,6 +8,7 @@
                 hastyPageFlip:true,
                 numberOfPages: dataO.length
             }), i, page, df = dataO;
+        gallery.bind();
 
         function genImgs(container, page, d) {
             var img, div;

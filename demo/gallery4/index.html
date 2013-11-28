@@ -53,6 +53,7 @@ var	gallery,
 	];
 
 gallery = new SwipeView('#wrapper', { numberOfPages: slides.length, hastyPageFlip:true, vertical:true});
+gallery.bind();
 
 // Load initial data
 for (i=0; i<3; i++) {

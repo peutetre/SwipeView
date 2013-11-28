@@ -71,6 +71,7 @@ var	gallery,
 	];
 
 gallery = new SwipeView('#wrapper', { numberOfPages: slides.length });
+gallery.bind();
 
 // Load initial data
 for (i=0; i<3; i++) {

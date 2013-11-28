@@ -70,6 +70,7 @@ var	gallery,
 	page;
 
 gallery = new SwipeView('#wrapper', { numberOfPages: 100, hastyPageFlip:true, vertical:true});
+gallery.bind();
 
 // Load initial data
 for (i=0; i<3; i++) {

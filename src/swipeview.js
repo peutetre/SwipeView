@@ -236,6 +236,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
               self.handleEvent(e);
             };
 
+        };
+
+    SwipeView.prototype = {
+        bind: function () {
             on(window, resizeEvent, this.handleEventF, false);
             on(this.wrapper, startEvent, this.handleEventF, false);
             on(this.wrapper, moveEvent, this.handleEventF, false);
@@ -247,9 +251,33 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             if (!hasTouch) {
                 on(this.wrapper, 'mouseout', this.handleEventF, false);
             }
-        };
+            return this;
+        },
 
-    SwipeView.prototype = {
+        unbind : function(){
+            // Remove the event listeners
+            off(window, resizeEvent, this.handleEventF);
+            off(this.wrapper, startEvent, this.handleEventF);
+            off(this.wrapper, moveEvent, this.handleEventF);
+            off(this.wrapper, endEvent, this.handleEventF);
+            off(this.slider, transitionEndEvent, this.handleEventF);
+
+            if (!hasTouch) {
+                off(this.wrapper, 'mouseout', this.handleEventF);
+            }
+            return this;
+        },
+
+        /**
+         * Removes all external events callbacks
+         */
+        offAll: function () {
+            while ( this.customEvents.length ) {
+                this.E.unbind(this.customEvents[0][0], this.customEvents[0][1]);
+                this.customEvents.shift();
+            }
+        },
+
         reset : function (pageCount) {
             this.goToPage(0);
             this.updatePageCount(pageCount);
@@ -276,29 +304,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             this.customEvents.push(['touchstart', fn]);
         },
 
-        /**
-         * Removes all external events callbacks
-         */
-        unbind : function(){
-            while ( this.customEvents.length ) {
-                this.E.unbind(this.customEvents[0][0], this.customEvents[0][1]);
-                this.customEvents.shift();
-            }
-        },
-
         destroy: function () {
             this.unbind();
-
-            // Remove the event listeners
-            off(window, resizeEvent, this.handleEventF);
-            off(this.wrapper, startEvent, this.handleEventF);
-            off(this.wrapper, moveEvent, this.handleEventF);
-            off(this.wrapper, endEvent, this.handleEventF);
-            off(this.slider, transitionEndEvent, this.handleEventF);
-
-            if (!hasTouch) {
-                off(this.wrapper, 'mouseout', this.handleEventF);
-            }
+            this.offAll();
         },
 
         refreshSize: function () {

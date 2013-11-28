@@ -21,6 +21,7 @@ window.addEventListener('load', function () {
 		req = new XMLHttpRequest();
 
 	ereader = new SwipeView('#wrapper', { hastyPageFlip:true });
+  ereader.bind();
 
 	// Ajax request
 	req.open('GET', 'flowers.txt', true);

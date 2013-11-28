@@ -13,6 +13,7 @@
             },
             locked = false,
             x = 0, y = 0, id;
+        gallery.bind();
 
         function onTouchStart(evt) {
             console.log('touchstart');
