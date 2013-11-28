@@ -71,6 +71,7 @@ var	gallery,
 	];
 
 gallery = new SwipeView('#wrapper', { numberOfPages: slides.length });
+gallery.bind();
 
 // Load initial data
 for (i=0; i<3; i++) {
@@ -81,6 +82,10 @@ for (i=0; i<3; i++) {
 	el.width = slides[page].width;
 	el.height = slides[page].height;
 	el.onload = function () { this.className = ''; }
+  // fixes for IE 
+  el.setAttribute("unselectable", "on");
+  el.ondragstart = function() { return false; };
+  
 	gallery.masterPages[i].appendChild(el);
 
 	el = document.createElement('span');

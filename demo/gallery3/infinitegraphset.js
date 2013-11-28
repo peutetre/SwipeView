@@ -8,6 +8,7 @@
                 hastyPageFlip:true,
                 numberOfPages: dataO.length
             }), i, page;
+        gallery.bind();
 
         function genImgs(container, page, d) {
             var img, div;
@@ -22,6 +23,9 @@
                 div.style.width = d.get(page).width + "px";
                 div.style.height = d.get(page).height + "px";
                 img.onload = function () { this.className = ''; }
+                // fixes for IE 
+                img.setAttribute("unselectable", "on");
+                img.ondragstart = function() { return false; };
                 div.appendChild(img);
                 container.appendChild(div);
             }

@@ -27,6 +27,7 @@ gallery = new SwipeView('#wrapper', {
     vertical: true,
     hastyPageFlip:true
 });
+gallery.bind();
 
 function init(domElt, myGallery, id, idx) {
     domElt = document.createElement('div');

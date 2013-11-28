@@ -13,6 +13,7 @@
             },
             locked = false,
             x = 0, y = 0, id;
+        gallery.bind();
 
         function onTouchStart(evt) {
             console.log('touchstart');
@@ -65,6 +66,9 @@
                 img.src = d.get(page).imgs[i];
                 img.width = d.get(page).width;
                 img.height = d.get(page).height;
+                // fixes for IE 
+                img.setAttribute("unselectable", "on");
+                img.ondragstart = function() { return false; };
                 div.style.width = d.get(page).width + "px";
                 div.style.height = d.get(page).height + "px";
                 img.onload = function () { this.className = ''; }

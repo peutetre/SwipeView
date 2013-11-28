@@ -1,3 +1,10 @@
+SwipeView v1.3.0 - 2013-09-28
+=============================
+
+- the SwipeView instanciation does not auto-bind anymore
+- Add bind() and unbind()
+- the old unbind() has been renamed to offAll()
+
 SwipeView v1.0.5 - 2013-07-04
 =============================
 

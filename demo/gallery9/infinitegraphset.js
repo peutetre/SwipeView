@@ -17,6 +17,7 @@
             locked = false,
             x = 0, y = 0, id;
 
+        gallery.bind();
         // FIXME
         /*function onTouchStart(evt) {
             console.log('touchstart');
@@ -72,6 +73,9 @@
                 div.style.width = d.get(page).width + "px";
                 div.style.height = d.get(page).height + "px";
                 img.onload = function () { this.className = ''; }
+                // fixes for IE 
+                img.setAttribute("unselectable", "on");
+                img.ondragstart = function() { return false; };
                 // FIXME
                 /*div.ontouchstart = onTouchStart;
                 div.ontouchmove = onTouchMove;
